@@ -148,7 +148,7 @@ const Index = () => {
             m.addEventListener("downloadprogress", (e) => {
               const event = e as DownloadProgressEvent;
               const percentage = ((event.loaded / event.total) * 100).toFixed(2);
-              console.log(Downloaded ${event.loaded} of ${event.total} bytes (${percentage}%).);
+              console.log(`Downloaded ${event.loaded} of ${event.total} bytes (${percentage}%).`);
             });
           }
         });
@@ -207,12 +207,12 @@ const Index = () => {
       console.log("Availability for", message.language, "→", targetLang, ":", availability);
   
       if (availability === "no") {
-        throw new Error(Translation not available for ${message.language} → ${targetLang});
+        throw new Error(`Translation not available for ${message.language} → ${targetLang}`);
       }
   
       let translator;
       if (availability === "after-download") {
-        console.log(Downloading translation model for ${message.language} → ${targetLang}...);
+        console.log(`Downloading translation model for ${message.language} → ${targetLang}...`);
   
         translator = await window.ai.translator.create({
           sourceLanguage: message.language,
@@ -222,13 +222,13 @@ const Index = () => {
             
             if ("ondownloadprogress" in monitor) {
               monitor.ondownloadprogress = (e: DownloadProgressEvent) => {
-                console.log(Download Progress: ${e.loaded} of ${e.total} bytes.);
+                console.log(`Download Progress: ${e.loaded} of ${e.total} bytes.`);
               };
             } else {
               console.log("ondownloadprogress property not available, using addEventListener...");
               monitor.addEventListener("downloadprogress", (e) => {
                 const event = e as DownloadProgressEvent;
-                console.log(Download Progress: ${event.loaded} of ${event.total} bytes.);
+                console.log(`Download Progress: ${event.loaded} of ${event.total} bytes.`);
               });
             }
   
@@ -268,7 +268,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[hsl(var(--background))]">
       <SetupModal />
       <main className="pt-4 chat-container">
         {messages.map((message) => (
