@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatMessage } from "@/components/ChatMessage";
@@ -14,6 +13,12 @@ interface Message {
   isSummarizing?: boolean;
   isTranslating?: boolean;
 }
+
+interface DownloadProgressEvent extends Event {
+  loaded: number;
+  total: number;
+}
+
 
 declare global {
   interface Window {
@@ -141,8 +146,9 @@ const Index = () => {
           length: "medium",
           monitor(m) {
             m.addEventListener("downloadprogress", (e) => {
-              const percentage = ((e.loaded / e.total) * 100).toFixed(2);
-              console.log(`Downloaded ${e.loaded} of ${e.total} bytes (${percentage}%).`);
+              const event = e as DownloadProgressEvent;
+              const percentage = ((event.loaded / event.total) * 100).toFixed(2);
+              console.log(Downloaded ${event.loaded} of ${event.total} bytes (${percentage}%).);
             });
           }
         });
@@ -201,12 +207,12 @@ const Index = () => {
       console.log("Availability for", message.language, "→", targetLang, ":", availability);
   
       if (availability === "no") {
-        throw new Error(`Translation not available for ${message.language} → ${targetLang}`);
+        throw new Error(Translation not available for ${message.language} → ${targetLang});
       }
   
       let translator;
       if (availability === "after-download") {
-        console.log(`Downloading translation model for ${message.language} → ${targetLang}...`);
+        console.log(Downloading translation model for ${message.language} → ${targetLang}...);
   
         translator = await window.ai.translator.create({
           sourceLanguage: message.language,
@@ -215,17 +221,18 @@ const Index = () => {
             console.log("Monitor function attached:", monitor);
             
             if ("ondownloadprogress" in monitor) {
-              monitor.ondownloadprogress = (e: any) => {
-                console.log(`Download Progress: ${e.loaded} of ${e.total} bytes.`);
+              monitor.ondownloadprogress = (e: DownloadProgressEvent) => {
+                console.log(Download Progress: ${e.loaded} of ${e.total} bytes.);
               };
             } else {
               console.log("ondownloadprogress property not available, using addEventListener...");
-              monitor.addEventListener("downloadprogress", (e: any) => {
-                console.log(`Download Progress: ${e.loaded} of ${e.total} bytes.`);
+              monitor.addEventListener("downloadprogress", (e) => {
+                const event = e as DownloadProgressEvent;
+                console.log(Download Progress: ${event.loaded} of ${event.total} bytes.);
               });
             }
   
-            monitor.addEventListener("error", (e: any) => {
+            monitor.addEventListener("error", (e: Event) => {
               console.error("Download error:", e);
             });
           },
